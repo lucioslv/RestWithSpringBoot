@@ -1,18 +1,31 @@
-package br.com.project.restwithspringboot.models;
+package br.com.project.restwithspringboot.data.vos.v1;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Person implements Serializable {
+@JsonPropertyOrder({"id", "first_name", "last_name", "address", "gender"})
+public class PersonVO implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private Long id;
+
+    @JsonProperty("first_name")
     private String firstName;
+
+    @JsonProperty("last_name")
     private String lastName;
+
     private String address;
+
+    @JsonIgnore
     private String gender;
 
-    public Person() {
+    public PersonVO() {
     }
 
     public Long getId() {
@@ -59,8 +72,8 @@ public class Person implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Person person = (Person) o;
-        return Objects.equals(id, person.id) && Objects.equals(firstName, person.firstName) && Objects.equals(lastName, person.lastName) && Objects.equals(address, person.address) && Objects.equals(gender, person.gender);
+        PersonVO personVO = (PersonVO) o;
+        return Objects.equals(id, personVO.id) && Objects.equals(firstName, personVO.firstName) && Objects.equals(lastName, personVO.lastName) && Objects.equals(address, personVO.address) && Objects.equals(gender, personVO.gender);
     }
 
     @Override

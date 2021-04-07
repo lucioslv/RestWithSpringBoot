@@ -1,42 +1,43 @@
 package br.com.project.restwithspringboot.controllers;
 
-import br.com.project.restwithspringboot.models.Person;
-import br.com.project.restwithspringboot.services.PersonServices;
+import br.com.project.restwithspringboot.data.vos.v1.PersonVO;
+import br.com.project.restwithspringboot.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/api/person/v1")
 public class PersonController {
 
     @Autowired
-    private PersonServices services;
+    private PersonService service;
 
-    @RequestMapping(method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
-    public List<Person> findAll() {
-        return services.findAll();
+    @GetMapping
+    public List<PersonVO> findAll() {
+        return service.findAll();
     }
 
-    @RequestMapping(value="/{id}", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
-    public Person findById(@PathVariable(value="id") String id) {
-        return services.findById(id);
+    @GetMapping("/{id}")
+    public PersonVO findById(@PathVariable(value="id") Long id) {
+        return service.findById(id);
     }
 
-    @RequestMapping(method= RequestMethod.POST, consumes= MediaType.APPLICATION_JSON_VALUE, produces= MediaType.APPLICATION_JSON_VALUE)
-    public Person create(@RequestBody Person person) {
-        return services.create(person);
+    @PostMapping
+    public PersonVO create(@RequestBody PersonVO person) {
+        return service.create(person);
     }
 
-    @RequestMapping(method= RequestMethod.PUT, consumes= MediaType.APPLICATION_JSON_VALUE, produces= MediaType.APPLICATION_JSON_VALUE)
-    public Person update(@RequestBody Person person) {
-        return services.update(person);
+    @PutMapping
+    public PersonVO update(@RequestBody PersonVO person) {
+        return service.update(person);
     }
 
-    @RequestMapping(value="/{id}", method= RequestMethod.DELETE, produces= MediaType.APPLICATION_JSON_VALUE)
-    public void delete(@PathVariable(value="id") String id) {
-        services.delete(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable(value="id") Long id) {
+        service.delete(id);
+        return ResponseEntity.ok().build();
     }
 }
