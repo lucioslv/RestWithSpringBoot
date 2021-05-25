@@ -1,7 +1,11 @@
 package br.com.project.restwithspringboot.security.jwt;
 
 import br.com.project.restwithspringboot.exceptions.InvalidJwtAuthenticationException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,11 +33,11 @@ public class JwtTokenProvider {
     private UserDetailsService userDetailsService;
 
     @PostConstruct
-    public void init(){
+    protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username, List<String> roles){
+    public String createToken(String username, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
 
@@ -47,20 +51,19 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
-    
-    public Authentication getAuthentication(String token){
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "",userDetails.getAuthorities());
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     private String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public String resolveToken(HttpServletRequest req){
+    public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")){
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7, bearerToken.length());
         }
         return null;

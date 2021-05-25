@@ -6,11 +6,15 @@ import br.com.project.restwithspringboot.data.models.Person;
 import br.com.project.restwithspringboot.repositories.PersonRepository;
 import br.com.project.restwithspringboot.utils.DozerConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class PersonService {
+public class PersonServices {
 
     @Autowired
     PersonRepository repository;
@@ -20,8 +24,18 @@ public class PersonService {
         return DozerConverter.parseObject(entity, PersonVO.class);
     }
 
-    public List<PersonVO> findAll() {
-        return DozerConverter.parseListObjects(repository.findAll(), PersonVO.class);
+    public Page<PersonVO> findPersonByName(String firstName, Pageable pageable) {
+        var page = repository.findPersonByName(firstName, pageable);
+        return page.map(this::convertToPersonVO);
+    }
+
+    public Page<PersonVO> findAll(Pageable pageable) {
+        var page = repository.findAll(pageable);
+        return page.map(this::convertToPersonVO);
+    }
+
+    private PersonVO convertToPersonVO(Person entity){
+        return DozerConverter.parseObject(entity, PersonVO.class);
     }
 
     public PersonVO create(PersonVO person){
@@ -38,6 +52,13 @@ public class PersonService {
         entity.setGender(person.getGender());
         var vo = DozerConverter.parseObject(repository.save(entity), PersonVO.class);
         return vo;
+    }
+
+    @Transactional
+    public PersonVO disablePerson(Long id){
+        repository.disablePersons(id);
+        var entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
+        return DozerConverter.parseObject(entity, PersonVO.class);
     }
 
     public void delete(Long id){

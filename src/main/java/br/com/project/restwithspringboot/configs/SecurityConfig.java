@@ -13,20 +13,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private JwtTokenProvider tokenProvider;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         return bCryptPasswordEncoder;
     }
 
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception{
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
@@ -36,11 +36,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/auth/signin", "/api-docs/**", "swagger-ui.html**").permitAll()
-                    .antMatchers("/api/**").authenticated()
-                    .antMatchers("/users").denyAll()
+                .authorizeRequests()
+                .antMatchers("/auth/signin", "/api-docs/**", "/swagger-ui.html**").permitAll()
+                .antMatchers("/api/**").authenticated()
+                .antMatchers("/users").denyAll()
                 .and()
-                .apply(new JwtConfigurer((tokenProvider)));
+                .apply(new JwtConfigurer(tokenProvider));
     }
+
 }

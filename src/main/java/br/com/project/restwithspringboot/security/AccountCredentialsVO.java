@@ -3,7 +3,7 @@ package br.com.project.restwithspringboot.security;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AccountCredencialsVO  implements Serializable {
+public class AccountCredentialsVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class AccountCredencialsVO  implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AccountCredencialsVO that = (AccountCredencialsVO) o;
+        AccountCredentialsVO that = (AccountCredentialsVO) o;
         return Objects.equals(username, that.username) && Objects.equals(password, that.password);
     }
 
