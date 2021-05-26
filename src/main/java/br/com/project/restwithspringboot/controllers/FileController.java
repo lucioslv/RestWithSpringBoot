@@ -1,9 +1,8 @@
 package br.com.project.restwithspringboot.controllers;
 
 import br.com.project.restwithspringboot.data.vos.v1.UploadFileResponseVO;
-import br.com.project.restwithspringboot.exceptions.MyFileNotFoundException;
 import br.com.project.restwithspringboot.services.FileStorageServices;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Api(tags = "FileEndpoint")
+@Tag(name = "FileEndpoint")
 @RestController
 @RequestMapping("/api/file/v1")
 public class FileController {

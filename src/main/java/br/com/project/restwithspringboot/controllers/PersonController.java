@@ -2,25 +2,20 @@ package br.com.project.restwithspringboot.controllers;
 
 import br.com.project.restwithspringboot.data.vos.v1.PersonVO;
 import br.com.project.restwithspringboot.services.PersonServices;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-@Api(tags = {"Person Endpoint"})
+@Tag(name = "PersonEndpoint")
 @RestController
 @RequestMapping("/api/person/v1")
 public class PersonController {
@@ -28,12 +23,9 @@ public class PersonController {
     @Autowired
     private PersonServices service;
 
-    @Autowired
-    private PagedResourcesAssembler<PersonVO> assembler;
-
-    @ApiOperation("Find all people with token name")
+    @Operation(summary = "Find all people with token name")
     @GetMapping("/findPersonByName/{firstName}")
-    public ResponseEntity<?> findPersonByName(
+    public ResponseEntity<CollectionModel<PersonVO>> findPersonByName(
             @PathVariable(value="firstName") String firstName,
             @RequestParam(value="page", defaultValue = "0") int page,
             @RequestParam(value="limit", defaultValue = "10") int limit,
@@ -46,14 +38,12 @@ public class PersonController {
         Page<PersonVO> persons =  service.findPersonByName(firstName, pageable);
         persons.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
-        PagedModel<?> resources = assembler.toModel(persons);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return ResponseEntity.ok(CollectionModel.of(persons));
     }
 
-    @ApiOperation("Find all persons")
+    @Operation(summary = "Find all persons")
     @GetMapping
-    public ResponseEntity<?> findAll(
+    public ResponseEntity<CollectionModel<PersonVO>> findAll(
             @RequestParam(value="page", defaultValue = "0") int page,
             @RequestParam(value="limit", defaultValue = "10") int limit,
             @RequestParam(value="direction", defaultValue = "asc") String direction) {
@@ -65,12 +55,10 @@ public class PersonController {
         Page<PersonVO> persons =  service.findAll(pageable);
         persons.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
-        PagedModel<?> resources = assembler.toModel(persons);
-
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        return ResponseEntity.ok(CollectionModel.of(persons));
     }
 
-    @ApiOperation("Find a specific person by your ID")
+    @Operation(summary = "Find a specific person by your ID")
     @GetMapping("/{id}")
     public PersonVO findById(@PathVariable(value="id") Long id) {
         PersonVO personVO = service.findById(id);
@@ -78,7 +66,7 @@ public class PersonController {
         return personVO;
     }
 
-    @ApiOperation("Create a new person")
+    @Operation(summary = "Create a new person")
     @PostMapping
     public PersonVO create(@RequestBody PersonVO person) {
         PersonVO personVO = service.create(person);
@@ -86,7 +74,7 @@ public class PersonController {
         return personVO;
     }
 
-    @ApiOperation("Update a specific person")
+    @Operation(summary = "Update a specific person")
     @PutMapping
     public PersonVO update(@RequestBody PersonVO person) {
         PersonVO personVO = service.update(person);
@@ -94,7 +82,7 @@ public class PersonController {
         return personVO;
     }
 
-    @ApiOperation("Disable a specific person by your ID")
+    @Operation(summary = "Disable a specific person by your ID")
     @PatchMapping("/{id}")
     public PersonVO disablePerson(@PathVariable(value="id") Long id) {
         PersonVO personVO = service.disablePerson(id);
@@ -102,7 +90,7 @@ public class PersonController {
         return personVO;
     }
 
-    @ApiOperation("Delete a specific person by your ID")
+    @Operation(summary = "Delete a specific person by your ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value="id") Long id) {
         service.delete(id);
